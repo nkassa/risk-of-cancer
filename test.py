@@ -25,4 +25,3 @@ if __name__ == "__main__":
 
     average_misclassify_rate = cross_validation(processed_training_inputs, processed_testing_inputs, processed_training_labels, processed_testing_labels)
     print(f"Average Misclassification Rate: {average_misclassify_rate:0.4f}")
-
