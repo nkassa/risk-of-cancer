@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd 
-from lab4_utils import feature_names
+from cancer_utils import feature_names
 
 # Hint: Consider how to utilize np.unique()
 def preprocess_data(training_inputs, testing_inputs, training_labels, testing_labels):
@@ -9,10 +9,10 @@ def preprocess_data(training_inputs, testing_inputs, training_labels, testing_la
     # VVVVV YOUR CODE GOES HERE VVVVV $
     # loop through the column of the training input to find the '?'
     for x in range(training_inputs.shape[1]):
-    	# we are looping over the columns 
+        # we are looping over the columns 
     	columns = training_inputs[:, x]
     	# unique value
-    	uniqueval = np.unique(columns)
+        uniqueval = np.unique(columns)
     	# number of times repeated calculated in this loop
     	# create array the size of uniqueval
     	val_cnt = np.empty_like(uniqueval)
@@ -118,74 +118,9 @@ def naive_bayes(training_inputs, testing_inputs, training_labels, testing_labels
     assert len(training_inputs) == len(training_labels), f"training_inputs and training_labels need to be the same length"
     assert len(testing_inputs) == len(testing_labels), f"testing_inputs and testing_labels need to be the same length"
     misclassify_rate = 0
-    
-    
     # VVVVV YOUR CODE GOES HERE VVVVV $
     
-    # count # of training labels as "no-recurrence-events"
-    non_recu = np.count_nonzero(training_labels == "no-recurrence-events")
-    # count # of training labels as "recurrence-events"
-    recu = np.count_nonzero(training_labels == "recurrence-events")
     
-    
-    # Laplace smoothing (add 1 to numerator and 2 to the denominator for the two label options)
-    
-    # the probability of a training point in "no-recurrence-events"
-    prob_non_recu = (non_recu + 1) / (len(training_labels) + 2)
-    # the probability of a training point in "recurrence-events"
-    prob_recu = (recu + 1) / (len(training_labels) + 2)
-    
-    # compute most likely probabilities using Laplace smoothing 
-    most_common = {}
-    # loop through column
-    for f_indx in range(training_inputs.shape[1]):
-    	# get values in column 
-    	f_value = training_inputs[:, f_indx]
-    	# get unique values
-    	uniq = np.unique(f_value)
-    	# initialize counters
-    	non_recu_val = np.zeros(len(uniq))
-    	recu_val = np.zeros(len(uniq))
-    	# loop through unique values 
-    	for y in range(len(uniq)):
-    		value = uniq[y]
-    		# count # of times value appears in dataset for non recurring 
-    		non_recu_val[y] += np.count_nonzero(np.isin(f_value, value) & (training_labels == "no-recurrence-events"))
-    		# count # of times value appears in dataset for recurring 
-    		recu_val[y] += np.count_nonzero(np.isin(f_value, value) & (training_labels == "recurrence-events"))
-    	# dict for each column 
-    	most_common[f_indx] = {}
-    	# loop through unique values 
-    	for z in range(len(uniq)):
-    		value = uniq[z]
-    		# dict for unique value in each column 
-    		most_common[f_indx][value] = {}
-    		# Laplace smoothing for no recurrence
-    		most_common[f_indx][value]["no-recurrence-events"] = (non_recu_val[z] + 1) / (non_recu + len(uniq))
-    		# Laplace smoothing for recurrence
-    		most_common[f_indx][value]["recurrence-events"] = (recu_val[z] + 1) / (recu + len(uniq))
-    	
-    
-    # loop through testing inputs
-    for x, (f, lab) in enumerate(zip(testing_inputs, testing_labels)):
-    	# calc posterior prob for labels 
-    	lab_post_non_rec, lab_post_rec = prob_non_recu, prob_recu
-    	for idx in range(training_inputs.shape[1]):
-    		f_val = testing_inputs[x, idx]
-    		if f_val in most_common[idx]:
-    			lab_post_non_rec *= most_common[idx][f_val]["no-recurrence-events"] 
-    			lab_post_rec *= most_common[idx][f_val]["recurrence-events"] 
-    		else:
-    			lab_post_non_rec *= 1 / (non_recu + len(uniq))
-    			lab_post_rec *= 1 / (recu + len(uniq))
-    	# determine pred class using posterior prob
-    	pre_class = "recurrence-events" if lab_post_non_rec < lab_post_rec else "no-recurrence-events"
-    	# if incorrect increment by 1
-    	if pre_class != lab:
-    		misclassify_rate = misclassify_rate + 1	
-    # calc misclassification in terms of all testing labels
-    misclassify_rate /= len(testing_labels)
-
     # ^^^^^ YOUR CODE GOES HERE ^^^^^ $
     return misclassify_rate
 
